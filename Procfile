@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/rock-paper-scissors-ated -Dhttp.port=${PORT} -Dmongodb.uri=$MONGOHQ_URL
+web: target/universal/stage/bin/rock-paper-scissors-ated -Dhttp.port=${PORT} -Dmongodb.uri=$MONGODB_URI
