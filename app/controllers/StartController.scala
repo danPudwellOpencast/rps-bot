@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import models.Opponent
+import models.Moves
 import play.api.mvc.{Action, Controller}
 
 import scala.concurrent.Future
@@ -12,7 +12,8 @@ import scala.concurrent.Future
 class StartController @Inject() extends Controller {
   def start() = Action.async(parse.json) { implicit request =>
     val name = (request.body \ "opponentName").as[String]
-    Opponent.moves = Nil
+    Moves.opponentMoves = Nil
+    Moves.myMoves = Nil
     Future.successful(Ok)
   }
 }
