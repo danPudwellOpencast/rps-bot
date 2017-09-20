@@ -1,4 +1,4 @@
-name := """rps-bot"""
+name := """rock-paper-scissors-ated"""
 organization := "com.example"
 
 version := "1.0-SNAPSHOT"

@@ -16,6 +16,6 @@ class MoveController extends Controller {
 
   private def getMove: String = {
     val moves = Map(0 -> "ROCK", 1 -> "PAPER", 2 -> "SCISSORS", 3 -> "DYNAMITE", 4 -> "WATERBOMB")
-    moves(Random.nextInt(4))
+    moves(Random.nextInt(5))
   }
 }
