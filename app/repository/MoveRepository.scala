@@ -17,9 +17,8 @@ class MoveRepository @Inject() (val reactiveMongoApi: ReactiveMongoApi)
   def start(name: String) = {
 
     val opponent = Opponent(name)
-    collection.insert(opponent).map(lastError =>
+      collection.insert(opponent).map(lastError =>
       println(lastError))
-
   }
 
 //  def create(move: String) = Action.async {
