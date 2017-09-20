@@ -11,6 +11,7 @@ class MoveController extends Controller {
   }
 
   def lastOpponentMove() = Action {
+
     Ok
   }
 
