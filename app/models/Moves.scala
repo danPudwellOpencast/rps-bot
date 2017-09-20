@@ -2,7 +2,7 @@ package models
 
 object Moves {
 
-  var opponentMoves: List[String] = Nil
-  var myMoves: List[String] = Nil
+  var opponentMoves: List[Int] = Nil
+  var myMoves: List[Int] = Nil
 }
 

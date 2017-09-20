@@ -11,7 +11,7 @@ import scala.concurrent.Future
 @Singleton
 class StartController @Inject() extends Controller {
   def start() = Action.async(parse.json) { implicit request =>
-    val name = (request.body \ "opponentName").as[String]
+    //val name = (request.body \ "opponentName").as[String]
     Moves.opponentMoves = Nil
     Moves.myMoves = Nil
     Future.successful(Ok)
