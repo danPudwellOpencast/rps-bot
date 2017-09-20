@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/rock-paper-scissors-ated
+web: target/universal/stage/bin/rock-paper-scissors-ated -Dhttp.port=${PORT}
