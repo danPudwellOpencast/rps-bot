@@ -53,7 +53,7 @@ class MoveController extends Controller {
       val wholeSequence = Moves.opponentMoves.mkString
 
       val index = wholeSequence.indexOf(currentSequence) + lengthOfChain
-      if (index > wholeSequence.size) {
+      if (index+1 > wholeSequence.size) {
         counterMove(Moves.opponentMoves.groupBy(identity).maxBy(_._2.size)._1)
       } else {
         counterMove(wholeSequence.charAt(index).asDigit)
