@@ -52,14 +52,11 @@ class MoveController extends Controller {
       val currentSequence = Moves.opponentMoves.takeRight(lengthOfChain).mkString
       val wholeSequence = Moves.opponentMoves.mkString
 
-      if (wholeSequence.contains(currentSequence)) {
-        val index = wholeSequence.indexOf(currentSequence) + lengthOfChain
-        println(wholeSequence)
-        counterMove(wholeSequence.charAt(index).asDigit)
-      }
-      else {
-        //if we can't find a sequence played previously look at highest played and counter
+      val index = wholeSequence.indexOf(currentSequence) + lengthOfChain
+      if (index > wholeSequence.size) {
         counterMove(Moves.opponentMoves.groupBy(identity).maxBy(_._2.size)._1)
+      } else {
+        counterMove(wholeSequence.charAt(index).asDigit)
       }
     }
     else {
