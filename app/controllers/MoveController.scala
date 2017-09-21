@@ -54,6 +54,7 @@ class MoveController extends Controller {
 
       if (wholeSequence.contains(currentSequence)) {
         val index = wholeSequence.indexOf(currentSequence) + lengthOfChain
+        println(wholeSequence)
         counterMove(wholeSequence.charAt(index).asDigit)
       }
       else {
