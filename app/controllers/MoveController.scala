@@ -1,6 +1,6 @@
 package controllers
 
-import models.Moves
+import models.Game
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 
@@ -9,7 +9,15 @@ import scala.util.Random
 
 class MoveController extends Controller {
 
-  val moves = Map(0 -> "ROCK", 1 -> "PAPER", 2 -> "SCISSORS", 3 -> "DYNAMITE", 4 -> "WATERBOMB")
+  val ROCK = 0
+  val PAPER = 1
+  val SCISSORS = 2
+  val DYNAMITE = 3
+  val WATERBOMB = 4
+
+  val rockPaperScissors = Map(ROCK -> "ROCK", PAPER -> "PAPER", SCISSORS -> "SCISSORS")
+  val rockPaperScissorsDynamite = rockPaperScissors + (DYNAMITE -> "DYNAMITE")
+  val allMoves = rockPaperScissorsDynamite + (WATERBOMB -> "WATERBOMB")
 
   def move() = Action {
     Ok(Json.toJson(getMove))
@@ -17,50 +25,56 @@ class MoveController extends Controller {
 
   def lastOpponentMove() = Action.async(parse.json) { implicit request =>
     val move = (request.body \ "opponentLastMove").as[String]
-    Moves.opponentMoves = Moves.opponentMoves :+ moves.find(_._2 == move).get._1
+    Game.opponentMoves = Game.opponentMoves :+ allMoves.find(_._2 == move).get._1
     Future.successful(Ok)
+  }
+
+  private def checkDynamiteUsage(move: Int): Int = {
+    if (Game.myMoves.count(_ == 3) >= Game.dynamiteCount) // make sure we don't play more than X dynamite and substitute id we are over limit
+      Random.nextInt(rockPaperScissors.size)
+    else move
   }
 
   private def getMove: String = {
 
-    val move = {
-      if (Moves.myMoves.size < 10) moves(Random.nextInt(5))
-      else if (Moves.myMoves.count(_ == 3).toFloat / Moves.myMoves.size < 0.1) moves(3) // if dynamite is less than 10% of moves played play a dynamite
-      else if (Moves.myMoves.size > 500 && Moves.myMoves.size < 600) moves(Random.nextInt(5)) // play randomly between the 500th and 600th game
+    val move = checkDynamiteUsage({
+      if (Game.myMoves.size < 10) Random.nextInt(rockPaperScissorsDynamite.size)
+      else if (Game.myMoves.size % 10 == 0) DYNAMITE // if dynamite is less than 10% of moves played then play a dynamite
       else determineHistoricMove
-    }
-    Moves.myMoves = Moves.myMoves :+ moves.find(_._2 == move).get._1
-    move
+    })
+
+    Game.myMoves = Game.myMoves :+ move
+    allMoves(move)
   }
 
-  private def counterMove(move: Int): String = {
+  private def counterMove(move: Int): Int = {
     move match {
-      case 0 => moves(1)
-      case 1 => moves(2)
-      case 2 => moves(0)
-      case 3 => moves(4)
-      case 4 => moves(Random.nextInt(5))
+      case ROCK => PAPER
+      case PAPER => SCISSORS
+      case SCISSORS => ROCK
+      case DYNAMITE => Random.nextInt(rockPaperScissorsDynamite.size)
+      case WATERBOMB => Random.nextInt(rockPaperScissorsDynamite.size)
     }
   }
 
-  def determineHistoricMove: String = {
+  private def determineHistoricMove: Int = {
 
     val lengthOfChain = Random.nextInt(5) + 5 // get random value between 5 and 10
-    if (Moves.opponentMoves.size > lengthOfChain * 5) {
+    if (Game.opponentMoves.size > lengthOfChain * 5) {
 
       //try and find a sequence and counter the move played directly after sequence
-      val currentSequence = Moves.opponentMoves.takeRight(lengthOfChain).mkString
-      val wholeSequence = Moves.opponentMoves.mkString
+      val currentSequence = Game.opponentMoves.takeRight(lengthOfChain).mkString
+      val wholeSequence = Game.opponentMoves.mkString
 
       val index = wholeSequence.indexOf(currentSequence) + lengthOfChain
       if (index+1 > wholeSequence.size) {
-        counterMove(Moves.opponentMoves.groupBy(identity).maxBy(_._2.size)._1)
+        counterMove(Game.opponentMoves.groupBy(identity).maxBy(_._2.size)._1)
       } else {
         counterMove(wholeSequence.charAt(index).asDigit)
       }
     }
     else {
-      moves(Random.nextInt(5))
+      Random.nextInt(rockPaperScissorsDynamite.size)
     }
   }
 }
